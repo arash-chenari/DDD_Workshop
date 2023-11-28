@@ -1,3 +1,5 @@
+using Services.Domain.Exceptions;
+
 public class Account
 {
     public Account(string id, Money initialBalance)
@@ -9,9 +11,9 @@ public class Account
     public Money Balance { get; private set; }
 
     public void Credit(Money amount)
-    { 
+    {
         if (Balance <= amount)
-            throw new InvalidOperationException("No enough charge");
+            throw new NoEnoughChargeException();
         
         Balance -= amount;
     }

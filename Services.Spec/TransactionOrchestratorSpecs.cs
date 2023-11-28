@@ -1,5 +1,6 @@
 using AutoFixture.Xunit2;
 using FluentAssertions;
+using Services.Domain.Exceptions;
 namespace Services.Spec;
 
 public class TransactionOrchestratorSpecs
@@ -88,4 +89,25 @@ public class TransactionOrchestratorSpecs
 
     }
 
+    [Theory, AutoMoqData]
+    public void Transaction_fails_becuase_credit_account_doesnt_have_enough_balance(
+        [Frozen] Accounts accounts,
+        [Frozen(Matching.ImplementedInterfaces)]TransferService transferService,
+        TransactionOrchestrator sut,
+        AccountOrchestrator accountOrchestrator,
+        TransactionQueries queries,
+        DateTime now,
+        string creditAccountId,
+        string debitAccountId,
+        string transactionId
+
+        )
+    {
+        accountOrchestrator.OpenAccount(creditAccountId, 0);
+       
+        sut.DraftTransfer(transactionId, creditAccountId, debitAccountId, 100, now, "dummy");
+        Action expected = () => sut.CommitTransfer(transactionId);
+        
+        expected.Should().ThrowExactly<NoEnoughChargeException>();
+    }
 }

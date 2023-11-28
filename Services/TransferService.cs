@@ -26,7 +26,5 @@ public class TransferService : ITransferService
 
         accounts.Update(creditAccount);
         accounts.Update(debitAccount);
-
-
     }
 }
